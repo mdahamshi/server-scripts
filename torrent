@@ -1,0 +1,1 @@
+transmission-cli -f torrent-finish -w /home/mohammad/tmp/ $1

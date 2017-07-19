@@ -1,0 +1,13 @@
+x=$(lsblk | awk '/465/{print $1;exit}')
+y=${x}1
+echo mounting /dev/$y ...
+mount -o nouuid /dev/$y /transcend
+sleep 2
+echo unmounting /dev/$y ...
+umount -f /dev/$y
+sleep 1
+echo repairing /dev/$y ...
+xfs_repair /dev/$y
+sleep 1
+echo mounting /dev/$y ...
+mount -o nouuid /dev/$y /transcend

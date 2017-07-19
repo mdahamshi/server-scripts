@@ -1,0 +1,14 @@
+#!/bin/bash
+
+general="general"
+push="push"
+tmux has-session -t "general"
+
+if [ "$?" != 0 ]
+then
+	tmux new -s $general -n bash -d
+	tmux new -s $push -n output
+fi
+
+tmux a -t general
+exit 0

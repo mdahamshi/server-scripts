@@ -1,0 +1,1 @@
+cd /var/www/html/data-visualization/;sudo git pull origin master;cd ..;sudo chown -R www-data:www-data data-visualization/
