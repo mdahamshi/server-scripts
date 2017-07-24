@@ -1,0 +1,44 @@
+#!/bin/bash
+tryFix()
+{
+	echo trying to fix...
+	cd /etc/network
+	cp insmart interfaces
+	ifdown wlan0
+	sleep 5
+	ifup wlan0
+	sleep 10
+	cp inlocal interfaces
+	ifdown wlan0
+	sleep 5
+	ifup wlan0
+	sleep 10
+}
+ping 192.168.0.101 -c 10
+if [ "$?" -eq 1 ]
+then
+	echo "$(date +%h\ %d\ %H:%M:%S) assertZM: INF no route to the IPCam trying to fix..." >> /var/log/syslog
+	tryFix
+	ping 192.168.0.101 -c 10
+	if [ "$?" -eq 1 ] 
+	then
+		sudo service zoneminder stop
+		pbme "Error: something wrong, cannot reach the IPcam."
+		echo "$(date +%h\ %d\ %H:%M:%S) assertZM: ERR no route to the IPCam ." >> /var/log/syslog
+		exit 1
+	fi
+	pbme "zoneminder connection fixed successfully :)"
+fi
+#check if zoneminder service running
+pgrep zmc
+
+if [ "$?" -eq 1 ]
+then
+	sudo service zoneminder restart
+	echo "$(date +%h\ %d\ %H:%M:%S) assertZM: INF zoneminder was not running." >> /var/log/syslog
+	exit 2
+fi
+echo "$(date +%h\ %d\ %H:%M:%S) assertZM: all good :)" >> /var/log/syslog
+echo "assertZM: all good :)"
+exit 0
+
