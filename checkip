@@ -1,0 +1,11 @@
+#!/bin/bash
+
+ping $1 -c 10 &> /dev/null
+if [ "$?" -eq 1 ]
+then 
+	echo "$1 is not reachable."
+	dd=$(date +%h\ %d\ %H:%M:%S)
+	echo $dd checkip: $1 is unreachable. >> /var/log/syslog
+	exit 1
+fi
+exit 0

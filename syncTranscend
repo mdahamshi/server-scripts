@@ -1,0 +1,60 @@
+#!/bin/bash
+pgrep syncTranscend
+if [ "$?" -gt "0" ]
+then
+	x=`date +%h\ %d\ %H:%M:%S`
+	echo $x syncTranscend: INF already running. >> /var/log/syslog
+	exit 0
+fi
+dir=$(dirname $(readlink  -f "$0"))
+cd $dir
+last=$(<lastSync)
+now=$(date +%s)
+delta=$((now-last))
+if [ "$delta" -lt "86400" ]  #86400 = 1 day
+then
+	x=`date +%h\ %d\ %H:%M:%S`
+	echo $x syncTranscend: INF no need to sync. >> /var/log/syslog
+	exit 0
+fi
+kosaiip=$(</data/aes/kosaiip)
+x=`date +%h\ %d\ %H:%M:%S`
+echo $x syncTranscend: INF operation begin.$(whoami) >> /var/log/syslog
+PASS=$(</data/aes/kosai)
+su -c 'crontab -l > /transcend/server/crontab' - mohammad
+sudo connectwifi insmart 
+checkip $kosaiip
+if [ "$?" -eq 1 ]
+then
+	echo $x syncTranscend: ERR cannot reach $kosaiip >> /var/log/syslog
+	sudo connectwifi inlocal
+	exit 1
+fi
+
+echo "mounting kosai..."
+sleep 2
+sudo mountKosai
+mounted=$(df | grep kosai)
+if [ -z "$mounted" ]
+then
+	echo $x syncTranscend: ERR cannot mount $kosaiip >> /var/log/syslog
+	echo "kosai not mounted !"
+	sudo connectwifi inlocal
+	exit 1
+fi
+echo "begin the sync..."
+send-fb "Qusai Dhamshe" "Hey Qusai, A server sync just started, please keep the PC powered on until I finish, will message you then..."
+sleep 2
+su  -c 'rsync -rP --exclude=DriverStore --append /transcend/ /mnt/kosai/' - mohammad
+send-fb "Qusai Dhamshe" "All good, I'm done :)"
+sudo umount /mnt/kosai
+sudo connectwifi inlocal
+pbme "rsync done :)"
+x=`date +%h\ %d\ %H:%M:%S`
+echo $x syncTranscend: INF operation done. >> /var/log/syslog
+echo $(date +%s) > ./lastSync
+
+exit 0
+
+
+

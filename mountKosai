@@ -1,0 +1,10 @@
+#!/usr/bin/expect -f
+
+
+set ip [gets [open "/data/aes/kosaiip"] ]
+set pass [gets [open "/data/aes/kosai"] ]
+spawn sudo mount.cifs //${ip}/mmd_bkp /mnt/kosai/ -o user=Kosai,uid=1000,gid=1000 
+expect "Password*"
+send "${pass}\r"
+expect eof
+exit

@@ -14,6 +14,15 @@ tryFix()
 	ifup wlan0
 	sleep 10
 }
+dir=$(dirname $(readlink  -f "$0"))
+cd $dir
+
+state=$(<state)
+if [ "$state" = "off" ]
+then
+	echo "state off"
+	exit 0
+fi
 ping 192.168.0.101 -c 10
 if [ "$?" -eq 1 ]
 then

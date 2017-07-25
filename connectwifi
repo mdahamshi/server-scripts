@@ -1,0 +1,23 @@
+#!/bin/bash
+
+echo "connecting wifi..."
+cd /etc/network
+cp $1 interfaces
+ifdown wlan0 &> /dev/null
+ifup wlan0 &> /dev/null
+dir=$(dirname $(readlink  -f "$0"))
+cd $dir
+
+if [ "$1" = "insmart" ]
+then
+	echo "connected to SMART..MI."
+	echo "off" > state
+	sudo service zoneminder stop
+	exit 0
+fi
+if [ "$1" = "inlocal" ]
+then
+	echo "connected to MMD..LOCAL."
+	echo "on" > state
+	sudo service zoneminder restart
+fi

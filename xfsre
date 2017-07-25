@@ -1,3 +1,8 @@
+
+if [ -n "$1" ]
+then 
+	sleep $1
+fi
 x=$(lsblk | awk '/465/{print $1;exit}')
 y=${x}1
 echo mounting /dev/$y ...
@@ -8,6 +13,14 @@ umount -f /dev/$y
 sleep 1
 echo repairing /dev/$y ...
 xfs_repair /dev/$y
+if [ "$?" -eq 1 ]
+then
+	logger "xfsre failed to repair /dev/$y"
+elif [ "$?" -eq 0 ]
+then
+	logger "xfsre finished successfuly."
+fi
+
 sleep 1
 echo mounting /dev/$y ...
 mount -o nouuid /dev/$y /transcend
