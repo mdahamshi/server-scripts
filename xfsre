@@ -8,6 +8,7 @@ y=${x}1
 echo mounting /dev/$y ...
 mount -o nouuid /dev/$y /transcend
 sleep 2
+sudo xfs_io -x -c  shutdown /dev/$y
 echo unmounting /dev/$y ...
 umount -f /dev/$y
 sleep 1
@@ -16,8 +17,7 @@ xfs_repair /dev/$y
 if [ "$?" -eq 1 ]
 then
 	logger "xfsre failed to repair /dev/$y"
-elif [ "$?" -eq 0 ]
-then
+else
 	logger "xfsre finished successfuly."
 fi
 

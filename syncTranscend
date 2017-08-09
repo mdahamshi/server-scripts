@@ -1,6 +1,6 @@
 #!/bin/bash
 pgrep syncTranscend
-if [ "$?" -gt "0" ]
+if [ "$?" -eq "0" ]
 then
 	x=`date +%h\ %d\ %H:%M:%S`
 	echo $x syncTranscend: INF already running. >> /var/log/syslog
