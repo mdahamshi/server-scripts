@@ -1,2 +1,5 @@
 #!/bin/bash
 sudo /home/mohammad/serverScripts/pull-data-visualization
+cd /data/archbkp/robot
+git pull origin master
+sudo pushDaemon restart
